@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Polyline Curve Builder Help</title>
+  <style>
+    :root {
+      --bg: #101418;
+      --panel: #171d23;
+      --panel2: #202832;
+      --ink: #eef3f7;
+      --muted: #b8c3ce;
+      --line: #3b4652;
+      --accent: #64b5f6;
+      --accent2: #8bc34a;
+      --warn: #ffb74d;
+      --bad: #ef9a9a;
+      --good: #9ccc65;
+      --code: #0b0f13;
+      --paper: #f7f8fa;
+      --paperText: #20242a;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", Arial, Helvetica, sans-serif;
+      color: var(--ink);
+      background: linear-gradient(180deg, #0d1116 0%, #151a20 60%, #101418 100%);
+      line-height: 1.55;
+    }
+    a { color: var(--accent); }
+    header {
+      padding: 30px 28px 22px;
+      border-bottom: 1px solid var(--line);
+      background: radial-gradient(circle at 20% 0%, rgba(100,181,246,.22), transparent 34%), var(--bg);
+    }
+    header h1 { margin: 0 0 8px; font-size: 32px; letter-spacing: .2px; }
+    header p { margin: 0; color: var(--muted); max-width: 980px; }
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 16px;
+    }
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 13px;
+    }
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      background: rgba(16,20,24,.96);
+      backdrop-filter: blur(6px);
+      border-bottom: 1px solid var(--line);
+      padding: 10px 24px;
+    }
+    nav a {
+      display: inline-block;
+      margin: 4px 12px 4px 0;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 14px;
+      padding: 4px 0;
+      border-bottom: 2px solid transparent;
+    }
+    nav a:hover { border-color: var(--accent); }
+    main { max-width: 1160px; margin: 0 auto; padding: 28px; }
+    section, details {
+      background: rgba(23,29,35,.95);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      margin: 0 0 22px;
+      padding: 22px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.18);
+    }
+    details { padding: 0; overflow: hidden; }
+    details > summary {
+      cursor: pointer;
+      padding: 18px 22px;
+      font-size: 20px;
+      font-weight: 650;
+      color: var(--ink);
+      list-style: none;
+    }
+    details > summary::-webkit-details-marker { display: none; }
+    details > summary::before {
+      content: "+";
+      display: inline-block;
+      width: 24px;
+      color: var(--accent);
+      font-weight: 800;
+    }
+    details[open] > summary::before { content: "-"; }
+    details .detail-body { padding: 0 22px 22px; }
+    h2 { margin: 0 0 14px; font-size: 24px; }
+    h3 { margin: 22px 0 8px; font-size: 18px; color: #dce8f4; }
+    p { margin: 0 0 12px; }
+    ul, ol { margin-top: 8px; padding-left: 23px; }
+    li { margin: 6px 0; }
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(360px, .9fr);
+      gap: 20px;
+      align-items: start;
+    }
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+    .card {
+      border: 1px solid var(--line);
+      background: var(--panel2);
+      border-radius: 12px;
+      padding: 16px;
+    }
+    .card h3 { margin-top: 0; }
+    .note, .warning, .success {
+      border-left: 4px solid var(--accent);
+      background: rgba(100,181,246,.09);
+      padding: 12px 14px;
+      border-radius: 8px;
+      margin: 12px 0;
+    }
+    .warning { border-left-color: var(--warn); background: rgba(255,183,77,.09); }
+    .success { border-left-color: var(--good); background: rgba(156,204,101,.09); }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 12px 0;
+      overflow: hidden;
+      border-radius: 10px;
+    }
+    th, td {
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      vertical-align: top;
+      text-align: left;
+    }
+    th { background: #26313c; color: #f4f8fb; }
+    td { background: rgba(255,255,255,.025); }
+    code, pre {
+      font-family: Consolas, "Cascadia Mono", "Courier New", monospace;
+      background: var(--code);
+      color: #e3f2fd;
+      border: 1px solid #27313b;
+      border-radius: 6px;
+    }
+    code { padding: 2px 5px; }
+    pre { padding: 12px; overflow: auto; }
+    figure { margin: 0; }
+    figcaption { color: var(--muted); font-size: 13px; margin-top: 8px; }
+    .svg-wrap {
+      background: #0c1015;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      overflow: auto;
+    }
+    .svg-wrap svg { width: 100%; max-width: 100%; height: auto; display: block; }
+    .quick ol { counter-reset: step; list-style: none; padding-left: 0; }
+    .quick li {
+      counter-increment: step;
+      position: relative;
+      padding: 10px 12px 10px 46px;
+      background: rgba(255,255,255,.035);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      margin: 8px 0;
+    }
+    .quick li::before {
+      content: counter(step);
+      position: absolute;
+      left: 12px;
+      top: 10px;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--accent);
+      color: #06101a;
+      text-align: center;
+      line-height: 24px;
+      font-weight: 800;
+    }
+    .kbd {
+      display: inline-block;
+      border: 1px solid #57616d;
+      border-bottom-color: #2b333c;
+      border-radius: 4px;
+      padding: 1px 6px;
+      background: #1b222a;
+      font-size: 12px;
+      color: #f5f7fa;
+    }
+    .print-note { display: none; }
+    footer {
+      color: var(--muted);
+      max-width: 1160px;
+      margin: 0 auto;
+      padding: 0 28px 36px;
+      font-size: 13px;
+    }
+    @media (max-width: 860px) {
+      main { padding: 18px; }
+      .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      nav { position: static; }
+    }
+    @media print {
+      body { background: white; color: #111; }
+      header, nav, section, details { box-shadow: none; background: white; color: #111; border-color: #bbb; }
+      details { display: block; }
+      details .detail-body { display: block; }
+      a { color: #0645ad; }
+      .print-note { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Polyline Curve Builder</h1>
+    <p>Help guide for the combined pyRevit command that converts connected model or detail line chains into fitted curve output.</p>
+    <div class="meta">
+      <span class="chip">Version 5.14.0</span>
+      <span class="chip">Author: Aaron Rumple, AIA</span>
+      <span class="chip">Revit 2022-2027</span>
+      <span class="chip">pyRevit / IronPython 2.7</span>
+      <span class="chip">Updated September 10, 2026</span>
+    </div>
+  </header>
+
+  <nav>
+    <a href="#quick-start">Quick start</a>
+    <a href="#dialog">Dialog</a>
+    <a href="#fit-vs-spline">Fit vs Spline</a>
+    <a href="#workflow">Workflow</a>
+    <a href="#requirements">Requirements</a>
+    <a href="#troubleshooting">Troubleshooting</a>
+  </nav>
+
+  <main>
+    <section id="overview" class="grid-2">
+      <div>
+        <h2>What this tool does</h2>
+        <p><strong>Polyline Curve Builder</strong> combines the old open/closed fit/spline tools into one command. It reads the current selection, orders connected model/detail curves into a single chain, automatically detects whether the chain is open or closed, and creates new curve output.</p>
+        <div class="success"><strong>Original curves are preserved.</strong> The command creates new output curves and does not delete the selected source lines.</div>
+        <p>The main production fit path uses AutoCAD Core Console to run the real <strong>PEDIT Fit</strong> operation, then converts the returned curve-fit vertices and DXF bulges into editable Revit <strong>Arc</strong> and <strong>Line</strong> elements.</p>
+      </div>
+      <figure class="svg-wrap" aria-label="Polyline Curve Builder icon graphic">
+        <svg viewBox="0 0 640 360" role="img">
+          <defs>
+            <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 Z" fill="#64b5f6"/></marker>
+            <filter id="soft" x="-10%" y="-10%" width="120%" height="120%"><feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#000" flood-opacity="0.35"/></filter>
+          </defs>
+          <rect x="18" y="18" width="604" height="324" rx="18" fill="#151c23" stroke="#3b4652" filter="url(#soft)"/>
+          <text x="44" y="58" font-family="Segoe UI, Arial" font-size="24" font-weight="700" fill="#eef3f7">Polyline chain to curve output</text>
+          <polyline points="70,245 140,130 224,212 310,96 392,218 500,132" fill="none" stroke="#b8c3ce" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+          <circle cx="70" cy="245" r="8" fill="#ffb74d"/><circle cx="140" cy="130" r="8" fill="#ffb74d"/><circle cx="224" cy="212" r="8" fill="#ffb74d"/><circle cx="310" cy="96" r="8" fill="#ffb74d"/><circle cx="392" cy="218" r="8" fill="#ffb74d"/><circle cx="500" cy="132" r="8" fill="#ffb74d"/>
+          <path d="M72,246 C120,118 190,128 224,212 S268,282 310,96 S365,95 392,218 S458,255 500,132" fill="none" stroke="#64b5f6" stroke-width="9" stroke-linecap="round" opacity="0.9"/>
+          <path d="M72,246 C120,118 190,128 224,212 S268,282 310,96 S365,95 392,218 S458,255 500,132" fill="none" stroke="#0b1015" stroke-width="2" stroke-dasharray="10 8" opacity="0.65"/>
+          <rect x="408" y="242" width="160" height="50" rx="10" fill="#202832" stroke="#64b5f6"/>
+          <text x="430" y="273" font-family="Segoe UI, Arial" font-size="18" font-weight="650" fill="#eef3f7">Arc / Line output</text>
+          <line x1="335" y1="233" x2="404" y2="260" stroke="#64b5f6" stroke-width="3" marker-end="url(#arrow)"/>
+        </svg>
+        <figcaption>Fit Curve creates AutoCAD-style fitted arc/line output from the ordered source chain.</figcaption>
+      </figure>
+    </section>
+
+    <section id="quick-start" class="quick">
+      <h2>Quick start</h2>
+      <ol>
+        <li>Select connected model lines or detail lines. If nothing is selected, the command prompts you to pick curve elements.</li>
+        <li>Run <strong>Polyline Curve Builder</strong>.</li>
+        <li>Review the detected chain type and endpoint gap in the dialog.</li>
+        <li>Choose <strong>Model Lines</strong> or <strong>Detail Lines</strong>.</li>
+        <li>Choose <strong>Fit Curve</strong> for AutoCAD PEDIT Fit tangent arcs, or <strong>Spline Curve</strong> for a NURBS control-point spline.</li>
+        <li>Click <span class="kbd">OK</span>. The command creates the new curve elements and prints a pyRevit report.</li>
+      </ol>
+    </section>
+
+    <section id="dialog">
+      <h2>User dialog</h2>
+      <p>The dialog is intentionally small: confirm what the command detected, choose the output type, choose the curve type, then run or cancel.</p>
+      <figure class="svg-wrap" aria-label="Polyline Curve Builder dialog graphic">
+        <svg viewBox="0 0 980 620" role="img">
+          <defs>
+            <marker id="calloutArrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#64b5f6"/></marker>
+            <filter id="shadow" x="-8%" y="-8%" width="116%" height="116%"><feDropShadow dx="0" dy="8" stdDeviation="10" flood-color="#000" flood-opacity="0.4"/></filter>
+          </defs>
+          <rect x="0" y="0" width="980" height="620" rx="18" fill="#0c1015"/>
+
+          <g filter="url(#shadow)">
+            <rect x="96" y="58" width="430" height="445" rx="6" fill="#f7f8fa" stroke="#b9c0c8"/>
+            <rect x="96" y="58" width="430" height="34" rx="6" fill="#e9edf2" stroke="#b9c0c8"/>
+            <text x="114" y="81" font-family="Segoe UI, Arial" font-size="14" font-weight="650" fill="#20242a">Polyline Curve Builder</text>
+            <rect x="110" y="106" width="402" height="72" rx="5" fill="#ffffff" stroke="#777"/>
+            <text x="124" y="130" font-family="Segoe UI, Arial" font-size="15" font-weight="700" fill="#20242a">Detected chain: Closed</text>
+            <text x="124" y="153" font-family="Segoe UI, Arial" font-size="14" fill="#20242a">Endpoint gap: 0.000000 ft</text>
+            <text x="124" y="172" font-family="Segoe UI, Arial" font-size="14" fill="#20242a">Source curves: 5</text>
+
+            <rect x="110" y="194" width="402" height="86" rx="5" fill="#ffffff" stroke="#b9c0c8"/>
+            <rect x="128" y="186" width="92" height="20" fill="#f7f8fa"/>
+            <text x="136" y="201" font-family="Segoe UI, Arial" font-size="14" fill="#20242a">Output Type</text>
+            <circle cx="135" cy="226" r="7" fill="#fff" stroke="#20242a"/><circle cx="135" cy="226" r="4" fill="#20242a"/>
+            <text x="152" y="231" font-family="Segoe UI, Arial" font-size="14" fill="#20242a">Model Lines</text>
+            <circle cx="135" cy="258" r="7" fill="#fff" stroke="#20242a"/>
+            <text x="152" y="263" font-family="Segoe UI, Arial" font-size="14" fill="#20242a">Detail Lines</text>
+
+            <rect x="110" y="300" width="402" height="92" rx="5" fill="#ffffff" stroke="#b9c0c8"/>
+            <rect x="128" y="292" width="84" height="20" fill="#f7f8fa"/>
+            <text x="136" y="307" font-family="Segoe UI, Arial" font-size="14" fill="#20242a">Curve Type</text>
+            <circle cx="135" cy="333" r="7" fill="#fff" stroke="#20242a"/><circle cx="135" cy="333" r="4" fill="#20242a"/>
+            <text x="152" y="338" font-family="Segoe UI, Arial" font-size="14" fill="#20242a">Fit Curve  - AutoCAD PEDIT Fit tangent arcs</text>
+            <circle cx="135" cy="365" r="7" fill="#fff" stroke="#20242a"/>
+            <text x="152" y="370" font-family="Segoe UI, Arial" font-size="14" fill="#20242a">Spline Curve  - ordered vertices are control points</text>
+
+            <text x="112" y="420" font-family="Segoe UI, Arial" font-size="13" fill="#555">Open/closed detection is automatic from the ordered chain endpoints.</text>
+            <text x="112" y="443" font-family="Segoe UI, Arial" font-size="13" fill="#555">Closed output is split only where needed for Revit-compatible editable spline pieces.</text>
+            <line x1="110" y1="460" x2="512" y2="460" stroke="#d1d5db"/>
+            <rect x="330" y="474" width="86" height="26" rx="4" fill="#f4f6f9" stroke="#999"/>
+            <text x="364" y="492" font-family="Segoe UI, Arial" font-size="13" fill="#20242a">OK</text>
+            <rect x="426" y="474" width="86" height="26" rx="4" fill="#f4f6f9" stroke="#999"/>
+            <text x="450" y="492" font-family="Segoe UI, Arial" font-size="13" fill="#20242a">Cancel</text>
+          </g>
+
+          <g font-family="Segoe UI, Arial" font-size="16" fill="#eef3f7">
+            <circle cx="620" cy="126" r="18" fill="#64b5f6"/><text x="615" y="132" font-weight="800" fill="#06101a">1</text>
+            <text x="650" y="122" font-weight="700">Detection summary</text>
+            <text x="650" y="145" fill="#b8c3ce">Chain type, endpoint gap, and source count.</text>
+            <line x1="602" y1="126" x2="510" y2="136" stroke="#64b5f6" stroke-width="3" marker-end="url(#calloutArrow)"/>
+
+            <circle cx="620" cy="235" r="18" fill="#8bc34a"/><text x="615" y="241" font-weight="800" fill="#06101a">2</text>
+            <text x="650" y="231" font-weight="700">Output type</text>
+            <text x="650" y="254" fill="#b8c3ce">Create model lines or detail lines.</text>
+            <line x1="602" y1="235" x2="510" y2="236" stroke="#8bc34a" stroke-width="3" marker-end="url(#calloutArrow)"/>
+
+            <circle cx="620" cy="347" r="18" fill="#ffb74d"/><text x="615" y="353" font-weight="800" fill="#06101a">3</text>
+            <text x="650" y="343" font-weight="700">Curve type</text>
+            <text x="650" y="366" fill="#b8c3ce">Fit Curve or Spline Curve.</text>
+            <line x1="602" y1="347" x2="510" y2="346" stroke="#ffb74d" stroke-width="3" marker-end="url(#calloutArrow)"/>
+
+            <circle cx="620" cy="485" r="18" fill="#ef9a9a"/><text x="615" y="491" font-weight="800" fill="#06101a">4</text>
+            <text x="650" y="481" font-weight="700">Run or cancel</text>
+            <text x="650" y="504" fill="#b8c3ce">OK creates curves; Cancel stops safely.</text>
+            <line x1="602" y1="485" x2="512" y2="487" stroke="#ef9a9a" stroke-width="3" marker-end="url(#calloutArrow)"/>
+          </g>
+        </svg>
+        <figcaption>Dialog controls and the information they affect.</figcaption>
+      </figure>
+
+      <table>
+        <thead><tr><th>Dialog area</th><th>What it means</th><th>Recommended use</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Detected chain</strong></td><td>Shows whether the ordered endpoints resolve as Open or Closed.</td><td>Confirm this before running. If the result looks wrong, fix source endpoints and rerun.</td></tr>
+          <tr><td><strong>Endpoint gap</strong></td><td>Distance between first and last ordered endpoints.</td><td>A closed chain should normally show 0.000000 ft or a very small value.</td></tr>
+          <tr><td><strong>Output Type</strong></td><td>Choose Model Lines or Detail Lines.</td><td>Use Detail Lines for drafting views. Use Model Lines from a valid model view/work plane.</td></tr>
+          <tr><td><strong>Curve Type</strong></td><td>Choose the curve creation method.</td><td>Use Fit Curve for AutoCAD-style PEDIT Fit arcs. Use Spline Curve when you need spline/control-point behavior.</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section id="fit-vs-spline">
+      <h2>Fit Curve vs Spline Curve</h2>
+      <div class="grid-3">
+        <div class="card">
+          <h3>Fit Curve</h3>
+          <p>Runs the AutoCAD-style <strong>PEDIT Fit</strong> process when AutoCAD Core Console is available.</p>
+          <ul>
+            <li>Best match to AutoCAD curve-fit polyline behavior.</li>
+            <li>Creates Revit Arc and Line pieces from DXF bulge data.</li>
+            <li>Falls back to a native G1 biarc approximation if AutoCAD fails.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Spline Curve</h3>
+          <p>Uses the ordered vertices as control points for NURBS-style output.</p>
+          <ul>
+            <li>Open spline uses native Revit NurbSpline creation.</li>
+            <li>Closed spline uses the Dynamo control-point workflow.</li>
+            <li>Useful when control-point spline behavior is preferred over arc-fit behavior.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Which should I choose?</h3>
+          <p>For the curve that should match AutoCAD <strong>PEDIT Fit</strong>, choose <strong>Fit Curve</strong>. For a spline controlled by the selected vertices, choose <strong>Spline Curve</strong>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section id="workflow">
+      <h2>Fit Curve workflow graphic</h2>
+      <figure class="svg-wrap" aria-label="Fit Curve workflow diagram">
+        <svg viewBox="0 0 1120 420" role="img">
+          <defs>
+            <marker id="flowArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0,0 L10,5 L0,10 Z" fill="#64b5f6"/></marker>
+          </defs>
+          <rect width="1120" height="420" rx="18" fill="#0c1015"/>
+          <g font-family="Segoe UI, Arial">
+            <rect x="48" y="92" width="208" height="172" rx="14" fill="#202832" stroke="#3b4652"/>
+            <text x="72" y="126" font-size="20" font-weight="700" fill="#eef3f7">1. Selected curves</text>
+            <polyline points="76,216 110,156 152,205 196,138 226,214" fill="none" stroke="#b8c3ce" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="76" cy="216" r="6" fill="#ffb74d"/><circle cx="110" cy="156" r="6" fill="#ffb74d"/><circle cx="152" cy="205" r="6" fill="#ffb74d"/><circle cx="196" cy="138" r="6" fill="#ffb74d"/><circle cx="226" cy="214" r="6" fill="#ffb74d"/>
+            <text x="72" y="246" font-size="14" fill="#b8c3ce">Model or detail line chain</text>
+
+            <line x1="270" y1="178" x2="342" y2="178" stroke="#64b5f6" stroke-width="4" marker-end="url(#flowArrow)"/>
+            <rect x="358" y="92" width="208" height="172" rx="14" fill="#202832" stroke="#3b4652"/>
+            <text x="382" y="126" font-size="20" font-weight="700" fill="#eef3f7">2. Order/detect</text>
+            <text x="382" y="166" font-size="15" fill="#b8c3ce">Single connected chain</text>
+            <text x="382" y="194" font-size="15" fill="#b8c3ce">Open or closed</text>
+            <text x="382" y="222" font-size="15" fill="#b8c3ce">Endpoint gap check</text>
+
+            <line x1="580" y1="178" x2="652" y2="178" stroke="#64b5f6" stroke-width="4" marker-end="url(#flowArrow)"/>
+            <rect x="668" y="62" width="230" height="232" rx="14" fill="#202832" stroke="#64b5f6"/>
+            <text x="692" y="100" font-size="20" font-weight="700" fill="#eef3f7">3. AutoCAD engine</text>
+            <rect x="700" y="124" width="166" height="38" rx="8" fill="#0b0f13" stroke="#3b4652"/>
+            <text x="725" y="149" font-size="15" fill="#e3f2fd">accoreconsole.exe</text>
+            <rect x="700" y="178" width="166" height="38" rx="8" fill="#0b0f13" stroke="#3b4652"/>
+            <text x="736" y="203" font-size="15" fill="#e3f2fd">PEDIT Fit</text>
+            <text x="692" y="252" font-size="14" fill="#b8c3ce">Returns curve-fit vertices + bulges</text>
+
+            <line x1="914" y1="178" x2="986" y2="178" stroke="#64b5f6" stroke-width="4" marker-end="url(#flowArrow)"/>
+            <rect x="1002" y="92" width="70" height="172" rx="14" fill="#202832" stroke="#3b4652"/>
+            <path d="M1020,226 C1038,138 1056,138 1072,210" fill="none" stroke="#64b5f6" stroke-width="7" stroke-linecap="round"/>
+            <path d="M1020,226 L1072,210" stroke="#b8c3ce" stroke-width="2" stroke-dasharray="5 5"/>
+            <text x="1009" y="294" font-size="14" fill="#b8c3ce">Revit Arc/Line</text>
+
+            <path d="M784,302 C784,356 546,360 462,286" fill="none" stroke="#ffb74d" stroke-width="3" stroke-dasharray="9 7" marker-end="url(#flowArrow)"/>
+            <text x="500" y="352" font-size="14" fill="#ffcc80">Fallback: native G1 biarc if AutoCAD is unavailable</text>
+          </g>
+        </svg>
+        <figcaption>Production Fit Curve path: ordered Revit points to AutoCAD PEDIT Fit, then back to Revit Arc/Line output.</figcaption>
+      </figure>
+    </section>
+
+    <section id="chain-graphic">
+      <h2>Open and closed chain detection</h2>
+      <figure class="svg-wrap" aria-label="Open and closed chain detection diagram">
+        <svg viewBox="0 0 940 330" role="img">
+          <rect width="940" height="330" rx="18" fill="#0c1015"/>
+          <g font-family="Segoe UI, Arial">
+            <rect x="45" y="58" width="390" height="214" rx="14" fill="#202832" stroke="#3b4652"/>
+            <text x="70" y="94" font-size="22" font-weight="700" fill="#eef3f7">Open chain</text>
+            <polyline points="76,218 146,122 226,198 326,116 394,208" fill="none" stroke="#b8c3ce" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="76" cy="218" r="9" fill="#ef9a9a"/><circle cx="394" cy="208" r="9" fill="#ef9a9a"/>
+            <text x="70" y="253" font-size="15" fill="#b8c3ce">First and last endpoints are apart.</text>
+
+            <rect x="505" y="58" width="390" height="214" rx="14" fill="#202832" stroke="#3b4652"/>
+            <text x="530" y="94" font-size="22" font-weight="700" fill="#eef3f7">Closed chain</text>
+            <path d="M620,217 L562,148 L650,112 L748,134 L790,220 L704,246 Z" fill="none" stroke="#b8c3ce" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="620" cy="217" r="9" fill="#8bc34a"/><circle cx="620" cy="217" r="17" fill="none" stroke="#8bc34a" stroke-width="2"/>
+            <text x="530" y="253" font-size="15" fill="#b8c3ce">First and last endpoints meet within tolerance.</text>
+          </g>
+        </svg>
+        <figcaption>The command orders the selected curves, then uses the ordered endpoints to determine whether the chain is open or closed.</figcaption>
+      </figure>
+    </section>
+
+    <details id="requirements" open>
+      <summary>Requirements and installation</summary>
+      <div class="detail-body">
+        <h3>Revit / pyRevit</h3>
+        <ul>
+          <li>Designed for Revit 2022-2027 with pyRevit IronPython 2.7.</li>
+          <li>Place the script in the pyRevit pushbutton folder as <code>_script.py</code>.</li>
+          <li>Place this help file in the same pushbutton folder as <code>help.html</code> if you want pyRevit to open it as command help.</li>
+        </ul>
+        <h3>AutoCAD Core Console</h3>
+        <p>For the most accurate Fit Curve result, AutoCAD Core Console should be installed. The command looks for <code>accoreconsole.exe</code> in common AutoCAD install paths. You can also set one of these environment variables to point directly to the executable:</p>
+        <pre>ACCORECONSOLE_EXE=C:\Program Files\Autodesk\AutoCAD 2025\accoreconsole.exe
+AUTOCAD_CORE_CONSOLE=C:\Program Files\Autodesk\AutoCAD 2025\accoreconsole.exe</pre>
+        <div class="note">If AutoCAD Core Console is not found or fails, Fit Curve still runs using the native G1 biarc fallback, but the shape may not exactly match AutoCAD PEDIT Fit.</div>
+      </div>
+    </details>
+
+    <details open>
+      <summary>Output behavior</summary>
+      <div class="detail-body">
+        <table>
+          <thead><tr><th>Choice</th><th>Created elements</th><th>Important notes</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Model Lines + Fit Curve</strong></td><td>Model Arc/Line pieces</td><td>Uses a model sketch plane. Run from a model view with a valid work plane, or select source model curves with a usable sketch plane.</td></tr>
+            <tr><td><strong>Detail Lines + Fit Curve</strong></td><td>Detail Arc/Line pieces</td><td>Created in the active view.</td></tr>
+            <tr><td><strong>Model Lines + Spline Curve</strong></td><td>Model NURBS spline pieces</td><td>Open spline is native Revit. Closed spline uses the Dynamo control-point workflow.</td></tr>
+            <tr><td><strong>Detail Lines + Spline Curve</strong></td><td>Detail NURBS spline pieces</td><td>Created in the active view where Revit allows detail curves.</td></tr>
+          </tbody>
+        </table>
+        <p>The command tries to use the first available line style from the selected source curves for the new output.</p>
+      </div>
+    </details>
+
+    <details id="troubleshooting" open>
+      <summary>Troubleshooting</summary>
+      <div class="detail-body">
+        <table>
+          <thead><tr><th>Message or symptom</th><th>Likely cause</th><th>Fix</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Selected curves do not form one continuous chain</strong></td><td>One or more endpoints are outside the chain join tolerance.</td><td>Zoom to the source geometry, trim/extend endpoints, remove duplicate pieces, and rerun.</td></tr>
+            <tr><td><strong>Fit Curve used native biarc fallback</strong></td><td>AutoCAD Core Console was not found, failed, or could not return a valid result.</td><td>Confirm AutoCAD is installed and set <code>ACCORECONSOLE_EXE</code> to the exact <code>accoreconsole.exe</code> path.</td></tr>
+            <tr><td><strong>Model Lines cannot be created from a Drafting View</strong></td><td>Model curves need a valid model-space plane.</td><td>Choose Detail Lines, or rerun from a model view with a valid work plane.</td></tr>
+            <tr><td><strong>Line is too short</strong></td><td>Generated or selected geometry is below Revit short-curve tolerance.</td><td>Clean very small source segments, remove duplicate points, or simplify the input chain.</td></tr>
+            <tr><td><strong>Closed Spline Curve Dynamo error</strong></td><td>Dynamo assemblies are unavailable or the closed control-point conversion failed.</td><td>Use Fit Curve for AutoCAD-style output, or confirm Dynamo for Revit is installed for the active Revit version.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <section id="notes">
+      <h2>Production notes</h2>
+      <ul>
+        <li>The command uses transactions and rolls back if curve creation fails.</li>
+        <li>Warnings are suppressed during creation where possible, then summarized in the pyRevit output.</li>
+        <li>Progress bars are cancellable during chain ordering, curve building, and curve creation.</li>
+        <li>AutoCAD bridge files are temporary and are cleaned after processing in the production version.</li>
+      </ul>
+      <div class="warning"><strong>Tip:</strong> For repeatable results, keep selected source lines coplanar and avoid very short segments, stacked duplicate lines, or endpoints that nearly touch but do not actually connect.</div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Polyline Curve Builder Help | Version 5.14.0 | Aaron Rumple, AIA | Generated for pyRevit command documentation.</p>
+  </footer>
+</body>
+</html>
